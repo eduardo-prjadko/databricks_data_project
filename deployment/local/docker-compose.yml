@@ -1,0 +1,17 @@
+services:
+  data_project:
+    build:
+      context: ../..
+      dockerfile: deployment/local/Dockerfile
+      args:
+        BUILD_PATH: "deployment/local"
+        IMAGE: "python"
+        TAG: "3.12.4-slim-bullseye"
+        USER_NAME: "data_project"
+        USER_ID: "1200"
+    container_name: data_project
+    env_file:
+      - ./.env
+    volumes:
+      - ../..:/workspace
+    
