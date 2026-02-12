@@ -1,9 +1,8 @@
 # env
 .env
 
-# Local .terraform directories
+# terraform artifacts
 **/.terraform/*
-
-# .tfstate files
 *.tfstate
 *.tfstate.*
+.terraform.lock*
