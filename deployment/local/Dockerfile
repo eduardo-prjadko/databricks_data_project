@@ -13,7 +13,17 @@ RUN adduser --shell /bin/bash --uid ${USER_ID} --disabled-login ${USER_NAME}
 
 # update apt-get and install basic apps
 RUN apt-get update; \
-    apt-get install --no-install-recommends -y wget git unzip openssh-client curl less gnupg ca-certificates lsb-release
+    apt-get install --no-install-recommends -y \
+        wget \
+        git \
+        unzip \
+        openssh-client \
+        curl \
+        less \
+        gnupg \
+        ca-certificates \
+        lsb-release \
+        make
 RUN pip install --upgrade pip
 
 WORKDIR /tmp
