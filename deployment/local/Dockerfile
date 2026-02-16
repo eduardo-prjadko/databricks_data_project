@@ -23,7 +23,8 @@ RUN apt-get update; \
         gnupg \
         ca-certificates \
         lsb-release \
-        make
+        make \
+        libicu67
 RUN pip install --upgrade pip
 
 WORKDIR /tmp
@@ -39,6 +40,12 @@ RUN apt update && apt install terraform
 
 # install azure cli
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+# install azure functions core tool
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+RUN mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
+RUN sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/debian/$(lsb_release -rs 2>/dev/null | cut -d'.' -f 1)/prod $(lsb_release -cs 2>/dev/null) main" > /etc/apt/sources.list.d/dotnetdev.list'
+RUN apt update && apt install azure-functions-core-tools-4
 
 USER ${USER_NAME}
 
