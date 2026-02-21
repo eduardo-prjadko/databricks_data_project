@@ -7,10 +7,16 @@
     "workspaceFolder": "/workspace",
     "customizations":{
         "vscode": {
+            "settings": {
+                "azurite.skipApiVersionCheck": true
+            },
             "extensions": [
                 "ms-python.vscode-pylance",
                 "GitHub.vscode-github-actions",
-                "hashicorp.terraform"
+                "hashicorp.terraform",
+                "azurite.azurite",
+                "ms-python.python",
+                "ms-azuretools.vscode-azurestorage"
             ]
         }
     },
