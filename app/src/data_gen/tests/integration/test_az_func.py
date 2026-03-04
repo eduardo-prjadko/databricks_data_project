@@ -3,10 +3,15 @@ import time
 import json
 from pathlib import Path
 import logging
+import os
 
 import pytest
 from azure.storage.blob import BlobServiceClient
 
+
+@pytest.fixture()
+def set_environ():
+    os.environ["CONTAINER_NAME"] = "ci-dataproject"
 
 @pytest.fixture()
 def blob_service_client():
@@ -25,14 +30,21 @@ def blob_service_client():
     return blob_service_client
 
 @pytest.fixture(autouse=True)
-def set_local_env(blob_service_client: BlobServiceClient):
-    logging.info("Creating container in azurite environment...")
-    container = blob_service_client.create_container(name="ci-dataproject", timeout=15)
+def set_local_env(blob_service_client: BlobServiceClient, set_environ):
+    contanier_name = os.environ["CONTAINER_NAME"]
+    logging.info(f"Checking container {contanier_name}")
+    container = blob_service_client.get_container_client(contanier_name)
+    if not container.exists():
+        logging.info("Creating container in azurite environment...")
+        container = blob_service_client.create_container(name=contanier_name, timeout=15)
+    else:
+        logging.info("Container already exists. Proceding with tests...")
     yield
-    container.delete_container()
 
 
-def test_function(blob_service_client: BlobServiceClient):
+def test_function(blob_service_client: BlobServiceClient, set_environ):
+    container_name = os.environ["CONTAINER_NAME"]
+    
     result = subprocess.Popen(
         ["func", "start"],
         stdout=subprocess.PIPE, 
@@ -41,12 +53,21 @@ def test_function(blob_service_client: BlobServiceClient):
         bufsize=1 
     )
     
-    time.sleep(5)
+    time.sleep(10)
 
     result.terminate()
 
     logging.info(result)
 
-    assert blob_service_client.get_container_client("ci-dataproject").exists()
+    container = blob_service_client.get_container_client(container_name)
+    clients_blob = container.get_blob_client("clients/clients.json")
 
+    assert clients_blob.exists()
 
+    books_blob = container.get_blob_client("books/books.json")
+
+    assert books_blob.exists()
+
+    order_blobs = container.list_blob_names(name_starts_with="orders/")
+
+    assert list(order_blobs)
