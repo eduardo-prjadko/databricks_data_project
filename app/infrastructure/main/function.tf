@@ -24,7 +24,14 @@ resource "azurerm_linux_function_app" "data_gen_func" {
   service_plan_id            = azurerm_service_plan.data_gen_asp.id
 
   site_config {
+    application_stack {
+      python_version = "3.13"
+    }
   }
 
   enabled = false
+  
+  identity {
+    type = "SystemAssigned"
+  }
 }
