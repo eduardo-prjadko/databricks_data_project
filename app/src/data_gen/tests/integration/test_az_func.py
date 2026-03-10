@@ -11,7 +11,7 @@ from azure.storage.blob import BlobServiceClient
 
 @pytest.fixture()
 def set_environ():
-    os.environ["CONTAINER_NAME"] = "ci-dataproject"
+    os.environ["CONTAINER_NAME"] = "ci-dataproject-landing"
 
 @pytest.fixture()
 def blob_service_client():
@@ -53,7 +53,7 @@ def test_function(blob_service_client: BlobServiceClient, set_environ):
         bufsize=1 
     )
     
-    time.sleep(10)
+    time.sleep(20)
 
     result.terminate()
 
