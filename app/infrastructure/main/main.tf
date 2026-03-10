@@ -13,7 +13,7 @@ resource "azurerm_storage_account" "dataproject_st" {
 }
 
 resource "azurerm_storage_container" "dataproject_ci" {
-  name                  = "ci-dataproject"
+  name                  = "ci-dataproject-lading"
   storage_account_id    = azurerm_storage_account.dataproject_st.id
   container_access_type = "private"
 }
