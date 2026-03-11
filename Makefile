@@ -12,6 +12,13 @@ TF_BACKEND_KEY := $(TF_VAR_application_name)-$(TF_VAR_environment_name).tfstate
 TF_DIR := ./app/infrastructure/main
 TF_BOOTSTRAP_DIR := ./app/infrastructure/bootstrap_backend
 
+DATAGEN_STG_DIR := ./app/src/data_gen/stg
+DATAGEN_SRC_DIR := ./app/src/data_gen/src
+DATAGEN_DIST_DIR := ./app/src/data_gen/dist
+DATAGEN_RG_NAME := rg-$(TF_VAR_application_name)-$(TF_VAR_environment_name)
+DATAGEN_APP_NAME := func-$(TF_VAR_application_name)-$(TF_VAR_environment_name)-datagen
+
+
 bootstrap-backend:
 	@echo Bootstraping backend...
 	@terraform -chdir=$(TF_BOOTSTRAP_DIR) init
@@ -51,3 +58,25 @@ apply:
 # Clean up unnecessary files
 clean:
 	rm -rf .terraform
+
+build-datagen:
+	@mkdir -p $(DATAGEN_STG_DIR)
+	@mkdir -p $(DATAGEN_DIST_DIR)
+	@rsync -a \
+		--exclude "__pycache__/" \
+		--exclude ".venv/" \
+		--exclude ".vscode/" \
+		--exclude "tests/" \
+		--exclude ".gitignore" \
+		--exclude "local.settings.json" \
+		--exclude "requirements-dev.txt" \
+		--exclude "pytest.toml" \
+		$(DATAGEN_SRC_DIR) $(DATAGEN_STG_DIR)
+	@cd $(DATAGEN_STG_DIR)/src && python -m pip install -r ./requirements.txt --target .
+	@cd $(DATAGEN_STG_DIR)/src && zip -r ../../dist/build.zip .
+
+deploy-datagen: build-datagen
+	@az functionapp deployment source config-zip \
+		-g "$(DATAGEN_RG_NAME)" \
+		-n "$(DATAGEN_APP_NAME)" \
+		--src "$(DATAGEN_DIST_DIR)/build.zip"

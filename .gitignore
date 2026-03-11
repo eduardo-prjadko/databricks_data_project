@@ -7,6 +7,10 @@
 *.tfstate.*
 .terraform.lock*
 
+# datagen artifacts
+dist/
+stg/
+
 ### Azurite ###
 # Azurite queue
 __queuestorage__

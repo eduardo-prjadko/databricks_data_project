@@ -17,6 +17,7 @@ RUN apt-get update; \
         wget \
         git \
         unzip \
+        zip \
         openssh-client \
         curl \
         less \
@@ -24,7 +25,8 @@ RUN apt-get update; \
         ca-certificates \
         lsb-release \
         make \
-        libicu67
+        libicu67 \
+        rsync
 RUN pip install --upgrade pip
 
 WORKDIR /tmp
