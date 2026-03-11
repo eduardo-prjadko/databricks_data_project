@@ -23,13 +23,17 @@ resource "azurerm_linux_function_app" "data_gen_func" {
   storage_account_access_key = azurerm_storage_account.dataproject_function_st.primary_access_key
   service_plan_id            = azurerm_service_plan.data_gen_asp.id
 
+  app_settings = {
+    "WEBSITE_RUN_FROM_PACKAGE": 1
+  }
+
   site_config {
     application_stack {
-      python_version = "3.13"
+      python_version = "3.12"
     }
   }
 
-  enabled = false
+  enabled = true
   
   identity {
     type = "SystemAssigned"
