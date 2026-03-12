@@ -12,8 +12,8 @@ resource "azurerm_storage_account" "dataproject_st" {
   account_replication_type = "GRS"
 }
 
-resource "azurerm_storage_container" "dataproject_ci" {
-  name                  = "ci-dataproject-lading"
+resource "azurerm_storage_container" "dataproject_landing_ci" {
+  name                  = "ci-${var.application_name}-landing"
   storage_account_id    = azurerm_storage_account.dataproject_st.id
   container_access_type = "private"
 }

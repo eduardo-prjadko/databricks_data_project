@@ -15,12 +15,13 @@ LANDING_CONTAINER_NAME = "ci-dataproject-landing"
 CLIENTS_PATH = "clients"
 BOOKS_PATH = "books"
 ORDERS_PATH = "orders"
+FUNC_SCHEDULE = os.environ["FUNC_SCHEDULE"]
 
 
 app = func.FunctionApp()
 
 
-@app.timer_trigger(schedule="*/5 * * * * *", arg_name="myTimer", run_on_startup=False,
+@app.timer_trigger(schedule=FUNC_SCHEDULE, arg_name="myTimer", run_on_startup=False,
               use_monitor=False) 
 def data_generator(myTimer: func.TimerRequest) -> None:
     

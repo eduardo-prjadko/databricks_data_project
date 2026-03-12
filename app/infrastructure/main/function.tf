@@ -14,6 +14,13 @@ resource "azurerm_service_plan" "data_gen_asp" {
   sku_name            = "B1"
 }
 
+resource "azurerm_application_insights" "data_gen_appi" {
+  name                = "appi-${var.application_name}-${var.environment_name}"
+  location            = azurerm_resource_group.dataproject_rg.location
+  resource_group_name = azurerm_resource_group.dataproject_rg.name
+  application_type    = "web"
+}
+
 resource "azurerm_linux_function_app" "data_gen_func" {
   name                = "func-${var.application_name}-${var.environment_name}-datagen"
   resource_group_name = azurerm_resource_group.dataproject_rg.name
@@ -25,12 +32,17 @@ resource "azurerm_linux_function_app" "data_gen_func" {
 
   app_settings = {
     "WEBSITE_RUN_FROM_PACKAGE": 1
+    "AZFUNC_ACCOUNT_URL": azurerm_storage_account.dataproject_st.primary_blob_endpoint
+    "AZFUNC_ACCOUNT_KEY": azurerm_storage_account.dataproject_st.primary_access_key
+    "FUNC_SCHEDULE": "*/10 * * * * *"
   }
 
   site_config {
     application_stack {
       python_version = "3.12"
     }
+    application_insights_connection_string = azurerm_application_insights.data_gen_appi.connection_string
+    application_insights_key = azurerm_application_insights.data_gen_appi.instrumentation_key
   }
 
   enabled = true
